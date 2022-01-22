@@ -13,6 +13,22 @@ app.use(
 
 app.use(express.json());
 
+//API Routes
+app.post("/person", async (req, res) => {
+  const { name, salary, approved } = req.body;
+  const person = {
+    name,
+    salary,
+    approved,
+  };
+  try {
+    await Person.create(person);
+    res.status(200).json({ message: "Person created" });
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
+
 app.get("/", (req, res) => {
   res.json({ message: "Hello World" });
 });
