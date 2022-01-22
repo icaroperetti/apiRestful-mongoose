@@ -16,6 +16,17 @@ app.use(express.json());
 //API Routes
 app.post("/person", async (req, res) => {
   const { name, salary, approved } = req.body;
+
+  if (!name) {
+    res.status(422).json({ error: "Name is required" });
+  }
+
+  const userExists = await Person.findOne({ name });
+
+  if (userExists) {
+    return res.status(422).json({ error: "Person already exists" });
+  }
+
   const person = {
     name,
     salary,
