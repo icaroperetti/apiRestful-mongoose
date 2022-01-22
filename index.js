@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const app = express();
 require("dotenv/config");
 
-const Person = require("./models/Person");
+const personRoutes = require("./routes/personRoutes");
 
 app.use(
   express.urlencoded({
@@ -14,31 +14,8 @@ app.use(
 app.use(express.json());
 
 //API Routes
-app.post("/person", async (req, res) => {
-  const { name, salary, approved } = req.body;
 
-  if (!name) {
-    res.status(422).json({ error: "Name is required" });
-  }
-
-  const userExists = await Person.findOne({ name });
-
-  if (userExists) {
-    return res.status(422).json({ error: "Person already exists" });
-  }
-
-  const person = {
-    name,
-    salary,
-    approved,
-  };
-  try {
-    await Person.create(person);
-    res.status(200).json({ message: "Person created" });
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-});
+app.use("/person", personRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello World" });
