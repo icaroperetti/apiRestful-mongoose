@@ -21,7 +21,7 @@ router.post("/", async (req, res) => {
   };
   try {
     await Person.create(person);
-    res.status(200).json({ message: "Person created" });
+    res.status(200).json({ message: "Person created", person });
   } catch (error) {
     res.status(500).json({ error: error });
   }
@@ -41,7 +41,47 @@ router.get("/:id", async (req, res) => {
 
   try {
     const person = await Person.findOne({ _id: id });
+
+    if (!person) {
+      res.status(422).json({ error: "Person not found" });
+      return;
+    }
     res.status(200).json(person);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
+
+router.patch("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, salary, approved } = req.body;
+  person = {
+    name,
+    salary,
+    approved,
+  };
+  try {
+    const updatedPerson = await Person.updateOne({ _id: id }, person);
+    if (updatedPerson.matchedCount === 0) {
+      res.status(422).json({ error: "Person not found" });
+      return;
+    }
+    res.status(200).json(person);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedPerson = await Person.deleteOne({ _id: id });
+    if (deletedPerson.matchedCount === 0) {
+      res.status(422).json({ error: "Person not found" });
+      return;
+    }
+    res.status(200).json({ message: `Person deleted` });
   } catch (error) {
     res.status(500).json({ error: error });
   }
